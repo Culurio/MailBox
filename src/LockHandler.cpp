@@ -10,17 +10,29 @@ void setupLockSwitch() {
 }
 
 void handleLockState() {
-  bool currentState = digitalRead(REED_SWITCH_PIN); // LOW = closed (magnet nearby)
-  
+  bool currentState = digitalRead(REED_SWITCH_PIN); 
+
   if (currentState != lastLockState) {
     lastLockState = currentState;
 
-    if (currentState == LOW) {
+    // Determine door status (true for closed, false for open)
+    //I have inverted the logic soo the buzzer doesnt go on everytime
+    
+    bool doorClosed = (currentState == LOW); 
+
+    if (doorClosed) {
       Serial.println("Magnet detected: Door is CLOSED (locked)");
     } else {
       Serial.println("Magnet not detected: Door is OPEN (unlocked or removed)");
     }
+
+    // Send door status to Firebase
+    if (Firebase.RTDB.setBool(&fbdo, "/closed", doorClosed)) {
+      Serial.println("Door status updated to Firebase.");
+    } else {
+      Serial.printf("Firebase Error: %s\n", fbdo.errorReason().c_str());
+    }
   }
 
-  delay(100); // Debounce and reduce serial spam
+  delay(100); // debounce delay
 }

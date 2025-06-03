@@ -20,15 +20,15 @@ void setColor(int red, int green, int blue) {
 
 void updateMailboxStatusColor() {
   int packageCount = 0;
-  int servoState = 0;
+  bool servoState = 0;
 
-  bool hasPackage = Firebase.RTDB.getInt(&fbdo, "/packages", &packageCount) && packageCount > 0;
-  bool hasServoState = Firebase.RTDB.getInt(&fbdo, "/led/state", &servoState);
+  bool hasPackage = Firebase.RTDB.getInt(&fbdo, "/lastPackageNumber", &packageCount) && packageCount > 0;
+  bool hasServoState = Firebase.RTDB.getBool(&fbdo, "/led/locked", &servoState);
 
   if (hasPackage) {
     setColor(0, 0, 255); 
   } else if (hasServoState) {
-    if (servoState == 1) {
+    if (servoState) {
       setColor(255, 0, 0); 
     } else {
       setColor(0, 255, 0); 
