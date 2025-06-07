@@ -93,26 +93,20 @@ void handleButtonState() {
 void checkBuzzerCondition() {
   bool locked = false;
   bool closed = true;
+  bool buzzer = false;
 
   // Read lock state
-  if (Firebase.RTDB.getBool(&fbdo, "/led/locked", &locked)) {
-    Serial.printf("Locked state: %s\n", locked ? "true" : "false");
-  } else {
-    Serial.printf("Firebase Error (locked): %s\n", fbdo.errorReason().c_str());
-  }
-
+  Firebase.RTDB.getBool(&fbdo, "/led/locked", &locked);
   // Read door state
-  if (Firebase.RTDB.getBool(&fbdo, "/closed", &closed)) {
-    Serial.printf("Closed state: %s\n", closed ? "true" : "false");
-  } else {
-    Serial.printf("Firebase Error (closed): %s\n", fbdo.errorReason().c_str());
-  }
-
+  Firebase.RTDB.getBool(&fbdo, "/closed", &closed);
+   
+  Firebase.RTDB.getBool(&fbdo, "/buzzer", &buzzer);
   // Determine buzzer state
-  if (locked && !closed) {
-    Serial.println("Buzzer condition met: turning ON buzzer.");
+  if (locked && !closed || buzzer) {
+    Firebase.RTDB.setBool(&fbdo, "/buzzer", true);
     digitalWrite(BUZZER_PIN, HIGH);  
   } else {
+    Firebase.RTDB.setBool(&fbdo, "/buzzer", false);
     digitalWrite(BUZZER_PIN, LOW);   
   }
 }

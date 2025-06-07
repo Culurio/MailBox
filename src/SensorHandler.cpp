@@ -9,7 +9,7 @@ const int IR_SENSOR_PIN = 19;
 bool lastSensorState = HIGH;
 
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org", 0, 60000); // UTC
+NTPClient timeClient(ntpUDP, "pool.ntp.org", 3600, 60000); // UTC
 
 void setupSensor() {
   pinMode(IR_SENSOR_PIN, INPUT);
